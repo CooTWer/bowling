@@ -1,48 +1,48 @@
+var BowlingGame = function() {
+	this.rolls = [10,10,10,10,10,10,10,10,10,0,0];
+};
 
 
-function Round(firstTry,secondTry){
-    this.firstTry = firstTry;
-    this.secondTry = secondTry;
-    this.firstMultiple = 1;
-    this.secondMultiple = 1;
-}
 
-Round.prototype = {
-     frame : 0,
-     sum : 0,
-     extra1 : 0,
-     extra2 : 0,
-     extra3 : 0,
-     statistic : function(){
-        if(frame != 9){
-            if(this.first_try + this.second_try < 10){
-                add();
-                continue;
-            }
-            else if(this.first_try + this.second_try == 10 && this.first_try != 10){
-                extra1++;
-            }
-            else if(this.first_try + this.second_try == 10 && this.first_try == 10){
-                if(obj[i+1][0] != 10){
-                    flag[i+1][0]++;
-                    flag[i+1][1]++;
-                }
-                else{
-                    if(i!=8){
-                        flag[i+1][0]++;
-                        flag[i+2][0]++;
-                    }
-                    else{
-                        flag[9][0]++;
-                        flag[9][1]++;
-                    }
-                }
-            }
-        }
-     },
-     add : function(){
-        var tempSum = this.firstTry * (this.secondMultiple + extra1) + this.secondTry * (this.secondMultiple + extra2);
-        sum += tempSum;
-     }
+BowlingGame.prototype.score = function() {
+	var score = 0;
+	var frameIndex = 0;
+	var self = this;
 
-}
+	function sumOfBallsInFrame() {
+		return self.rolls[frameIndex] + self.rolls[frameIndex + 1];
+	}
+
+	function spareBonus() {
+		return self.rolls[frameIndex + 2];
+	}
+
+	function strikeBonus() {
+		return self.rolls[frameIndex + 1] + self.rolls[frameIndex + 2];
+	}
+
+	function isStrike() {
+		return self.rolls[frameIndex] === 10;
+	}
+
+	function isSpare() {
+		return self.rolls[frameIndex] + self.rolls[frameIndex + 1] === 10;
+	}
+
+	for (var frame = 0; frame < 10; frame++) {
+		if (isStrike()) {
+			score += 10 + strikeBonus();
+			frameIndex++;
+		} else if (isSpare()) {
+			score += 10 + spareBonus();
+			frameIndex += 2;
+		} else {
+			score += sumOfBallsInFrame();
+			frameIndex += 2;
+		}
+	}
+	return score;
+};
+
+var bowlinggame = new BowlingGame();
+console.log(bowlinggame.score());
