@@ -1,48 +1,52 @@
-//var http = require("http");
-//http.createServer(function (request,response){
-//	response.writeHead(200, {'Content-Type': 'text/plain'});
-//    response.end('Hello World\n');
-//}).listen(8888);
-//
-//console.log('Server running at http://127.0.0.1:8888/');
+var Bowling = function() {
+	this.bowlingscores = [10,10,10,10,10,10,10,10,10,10,10,10,0,0];
+};
 
-var obj = [[10,0],[10,0],[10,0],[10,0],[10,0],[10,0],[10,0],[10,0],[10,0],[10,10,10]];
-var sum = 0;
-var flag = [[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1]];
-for(var i=0; i<obj.length; i++){
-    var first_try = obj[i][0];
-    var second_try = obj[i][1];
 
-    if(i != 9){
-        if(first_try + second_try < 10){
-            sum += (first_try*flag[i][0] + second_try*flag[i][1]);
-            continue;
+Bowling.prototype.score = function() {
+    var index = 0;
+    var sum = 0;
+    var that = this;
+
+    function isStrike(){
+		return that.bowlingscores[index] == 10;
+    }
+
+    function strikeBonus(){
+        return that.bowlingscores[index+1] + that.bowlingscores[index+2];
+    }
+
+    function isSpare(){
+        return that.bowlingscores[index] + that.bowlingscores[index + 1] == 10;
+    }
+
+    function spareBonus(){
+        return that.bowlingscores[index+2];
+    }
+
+    function getFrameScore(){
+        return that.bowlingscores[index] + that.bowlingscores[index+1];
+    }
+
+    for(var frame = 0; frame<10; frame++){
+        if(isStrike()){
+            sum += 10;
+            sum += strikeBonus();
+            index ++;
         }
-        else if(first_try + second_try == 10 && first_try != 10){
-            flag[i+1][0]++;
+        else if(isSpare()){
+            sum += 10;
+            sum += spareBonus();
+            index += 2;
         }
-        else if(first_try + second_try == 10 && first_try == 10){
-            if(obj[i+1][0] != 10){
-                flag[i+1][0]++;
-                flag[i+1][1]++;
-            }
-            else{
-                if(i!=8){
-                    flag[i+1][0]++;
-                    flag[i+2][0]++;
-                }
-                else{
-                    flag[9][0]++;
-                    flag[9][1]++;
-                }
-            }
+        else{
+            sum += getFrameScore();
+            index += 2;
         }
     }
-    sum += (first_try*flag[i][0] + second_try*flag[i][1]);
-}
+    return sum;
+};
 
-if(typeof(obj[9][2]) != "undefined"){
-    sum += obj[9][2];
-}
 
-console.log(sum);
+var bowling = new Bowling();
+console.log(bowling.score());
